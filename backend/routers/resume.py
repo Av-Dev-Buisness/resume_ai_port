@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, UploadFile, File
 from backend.models.schemas import ResumeAnalyzeRequest, AnalysisResponse
 from backend.services.openai_client import analyze_resume_with_ai
+from backend.services.file_parser import extract_text_from_file
 
 router = APIRouter(prefix="/api", tags=["resume"])
 
@@ -18,12 +19,11 @@ async def analyze_resume(request: ResumeAnalyzeRequest):
 
 @router.post("/extract-text")
 async def extract_text(file: UploadFile = File(...)):
-    # Placeholder for file parsing logic (PDF/DOCX)
-    # For now, we just return a dummy text or read the file as text if possible
-    content = await file.read()
     try:
-        text = content.decode("utf-8")
-    except UnicodeDecodeError:
-        text = "Error: Could not decode file. Please upload a text file or paste content."
-    
-    return {"text": text}
+        contents = await file.read()
+        text = extract_text_from_file(contents, file.filename or "")
+        return {"text": text, "filename": file.filename}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")

@@ -93,6 +93,31 @@ export default function ResumeForm() {
                     <label htmlFor="resumeText" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                         Resume Content
                     </label>
+                    <div className="space-y-2">
+                        <Input
+                            id="resumeFile"
+                            name="resumeFile"
+                            type="file"
+                            accept=".pdf,.docx,.txt"
+                            onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                    try {
+                                        const { extractText } = await import("@/lib/api");
+                                        const result = await extractText(file);
+                                        const textarea = document.getElementById("resumeText") as HTMLTextAreaElement;
+                                        if (textarea) {
+                                            textarea.value = result.text;
+                                        }
+                                    } catch (err) {
+                                        console.error("Error extracting text:", err);
+                                        setError("Failed to extract text from file");
+                                    }
+                                }
+                            }}
+                        />
+                        <p className="text-xs text-muted-foreground">Upload a PDF, DOCX, or TXT file, or paste text below</p>
+                    </div>
                     <Textarea
                         id="resumeText"
                         name="resumeText"
