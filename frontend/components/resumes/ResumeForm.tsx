@@ -94,28 +94,44 @@ export default function ResumeForm() {
                         Resume Content
                     </label>
                     <div className="space-y-2">
-                        <Input
-                            id="resumeFile"
-                            name="resumeFile"
-                            type="file"
-                            accept=".pdf,.docx,.txt"
-                            onChange={async (e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                    try {
-                                        const { extractText } = await import("@/lib/api");
-                                        const result = await extractText(file);
-                                        const textarea = document.getElementById("resumeText") as HTMLTextAreaElement;
-                                        if (textarea) {
-                                            textarea.value = result.text;
+                        <div className="flex items-center gap-2">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => document.getElementById("resumeFile")?.click()}
+                                className="w-full sm:w-auto"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                Upload Resume File
+                            </Button>
+                            <input
+                                id="resumeFile"
+                                name="resumeFile"
+                                type="file"
+                                accept=".pdf,.docx,.txt"
+                                className="hidden"
+                                onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                        try {
+                                            const { extractText } = await import("@/lib/api");
+                                            const result = await extractText(file);
+                                            const textarea = document.getElementById("resumeText") as HTMLTextAreaElement;
+                                            if (textarea) {
+                                                textarea.value = result.text;
+                                            }
+                                        } catch (err) {
+                                            console.error("Error extracting text:", err);
+                                            setError("Failed to extract text from file");
                                         }
-                                    } catch (err) {
-                                        console.error("Error extracting text:", err);
-                                        setError("Failed to extract text from file");
                                     }
-                                }
-                            }}
-                        />
+                                }}
+                            />
+                        </div>
                         <p className="text-xs text-muted-foreground">Upload a PDF, DOCX, or TXT file, or paste text below</p>
                     </div>
                     <Textarea
