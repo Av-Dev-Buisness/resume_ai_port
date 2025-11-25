@@ -97,7 +97,7 @@ export default function ResumeForm() {
                         <div className="flex items-center gap-2">
                             <Button
                                 type="button"
-                                variant="outline"
+                                variant="secondary"
                                 onClick={() => document.getElementById("resumeFile")?.click()}
                                 className="w-full sm:w-auto"
                             >
